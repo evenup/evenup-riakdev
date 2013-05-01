@@ -1,0 +1,9 @@
+fixtures:
+  repositories:
+    backups: git://github.com/evenup/evenup-backups.git
+    concat: git://github.com/ripienaar/puppet-concat.git
+    ruby: git://github.com/evenup/evenup-ruby.git
+    sensu: git://github.com/sensu/sensu-puppet.git
+  symlinks:
+    riakdev: "#{source_dir}"
+
