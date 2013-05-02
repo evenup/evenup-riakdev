@@ -1,2 +1,5 @@
+v1.0.0:
+  Refactored dev instances to be more robust
+  Allows specifying the number of dev instances to run
 v0.1.0:
   Initial public release
