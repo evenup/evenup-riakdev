@@ -85,7 +85,7 @@ define riakdev::instance(
     unless    => "test -d ${install_dir}/dev${instance}",
     logoutput => on_failure,
     notify    => $join_notify,
-    require   => [User["riak${instance}"], Class['riakdev']],
+    require   => User["riak${instance}"],
   }
 
   file { [ "${install_dir}/dev${instance}/bin/riak", "${install_dir}/dev${instance}/bin/riak-admin" ]:
