@@ -47,6 +47,7 @@ define riakdev::instance(
   $pb_port,
   $handoff_port,
   $install_dir,
+  $join_node = false,
  ) {
 
   $version = $riakdev::version
@@ -61,19 +62,18 @@ define riakdev::instance(
   }
 
   user { "riak${instance}":
-    ensure      => 'present',
-    system      => true,
-    gid         => 'riak',
-    home        => "${install_dir}/dev${instance}",
-    shell       => '/bin/bash',
-    require     => Group['riak'];
+    ensure  => 'present',
+    system  => true,
+    gid     => 'riak',
+    home    => "${install_dir}/dev${instance}",
+    shell   => '/bin/bash',
   }
 
   case $instance {
-    1:        {
+    /^(1|'1')$/:  {
       $join_notify = File["${install_dir}/dev${instance}/bin/riak"]
     }
-    default:  {
+    default:    {
       $join_notify = Exec["join_node${instance}"]
     }
   }
@@ -85,7 +85,7 @@ define riakdev::instance(
     unless    => "test -d ${install_dir}/dev${instance}",
     logoutput => on_failure,
     notify    => $join_notify,
-    require   => User["riak${instance}"],
+    require   => [ User["riak${instance}"], Class['Riakdev::Prep'] ],
   }
 
   file { [ "${install_dir}/dev${instance}/bin/riak", "${install_dir}/dev${instance}/bin/riak-admin" ]:
@@ -131,16 +131,22 @@ define riakdev::instance(
                  File["/etc/init.d/riak_dev${instance}"] ]
   }
 
-  exec { "join_node${instance}":
-    command     => "/bin/sh -c \"${install_dir}/dev${instance}/bin/riak-admin cluster join dev1@${::fqdn}\"",
-    cwd         => "${install_dir}/dev${instance}",
-    path        => "/bin:/usr/bin:${install_dir}/dev${instance}/bin",
-    refreshonly => true,
-    environment => "HOME=${install_dir}/dev${instance}",
-    # TODO - this shouldn't notify outside the define - break this up
-    notify      => Exec['join_plan'],
-    require     => [ Service['riak_dev1'], Service["riak_dev${instance}"] ],
+  # This is here to prevent dependency cycle on dev1.  Find a better way to do this
+  case $instance {
+    /^(1|'1')$/:  { }
+    default:    {
+      exec { "join_node${instance}":
+        command     => "/bin/sh -c \"${install_dir}/dev${instance}/bin/riak-admin cluster join dev1@${::fqdn}\"",
+        cwd         => "${install_dir}/dev${instance}",
+        path        => "/bin:/usr/bin:${install_dir}/dev${instance}/bin",
+        refreshonly => true,
+        environment => "HOME=${install_dir}/dev${instance}",
+        notify      => Class['Riakdev::Finish'],
+        require     => Riakdev::Instance['dev1'],
+      }
+    }
   }
+
 
   $scheme = inline_template("<%= scope.lookupvar('::fqdn').split('.').reverse.join('.')%>.riak.dev<%= scope.lookupvar('instance')%>")
   # Metrics
