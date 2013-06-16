@@ -69,7 +69,7 @@ class riakdev(
     install_dir           => $install_dir
   } ->
   class { 'riakdev::finish':
-     install_dir  => $install_dir
+    install_dir  => $install_dir
   } ->
   Class['riakdev']
 }
