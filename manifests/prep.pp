@@ -16,9 +16,8 @@
 class riakdev::prep(
   $version,
   $install_dir,
+  $static_url,
 ) {
-
-  $static_url = hiera('static_url')
 
   group { 'riak':
     ensure  => 'present',

@@ -55,11 +55,13 @@ class riakdev(
   $http_initial_port    = 8091,
   $handoff_initial_port = 8101,
   $install_dir          = '/var/lib/riak',
+  $static_url           = 'http://files/',
 ) {
 
   class { 'riakdev::prep':
     version     => $version,
     install_dir => $install_dir,
+    static_url  => $static_url,
   } ->
   class { 'riakdev::instances':
     num_instances         => $num_instances,
