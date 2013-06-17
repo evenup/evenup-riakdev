@@ -48,7 +48,7 @@ define riakdev::instance(
   $handoff_port,
   $install_dir,
   $join_node = false,
- ) {
+) {
 
   $version = $riakdev::version
 
@@ -119,7 +119,7 @@ define riakdev::instance(
     ensure  => file,
     owner   => root,
     group   => root,
-    mode    => 0555,
+    mode    => '0555',
     content  => template('riakdev/riak_init.erb'),
   }
 
@@ -127,8 +127,8 @@ define riakdev::instance(
     ensure  => running,
     enable  => true,
     require => [ File["${install_dir}/dev${instance}/bin/riak"], File["${install_dir}/dev${instance}/bin/riak-admin"],
-                 File["${install_dir}/dev${instance}/etc/app.config"], File["${install_dir}/dev${instance}/etc/vm.args"],
-                 File["/etc/init.d/riak_dev${instance}"] ]
+                  File["${install_dir}/dev${instance}/etc/app.config"], File["${install_dir}/dev${instance}/etc/vm.args"],
+                  File["/etc/init.d/riak_dev${instance}"] ]
   }
 
   # This is here to prevent dependency cycle on dev1.  Find a better way to do this
