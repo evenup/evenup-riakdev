@@ -2,7 +2,7 @@ What is it?
 ===========
 
 A puppet module that creates a riak ["development"](http://docs.basho.com/riak/latest/tutorials/fast-track/Building-a-Development-Environment/) cluster.
-It takes care of putting binary files on disk and creating the cluster, but 
+It takes care of putting binary files on disk and creating the cluster, but
 does not create the initial binary tarball.  To create the binary tarball:
 
 ```
@@ -24,7 +24,7 @@ Usage:
 ------
 
 <pre>
-  class { 'riakdev': 
+  class { 'riakdev':
     version           => '1.3.1',
     num_instances     => 3,
     pb_initial_port   => 8081,
