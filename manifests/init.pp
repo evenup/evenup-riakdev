@@ -62,16 +62,27 @@ class riakdev(
     version     => $version,
     install_dir => $install_dir,
     static_url  => $static_url,
-  } ->
+  }
+
   class { 'riakdev::instances':
     num_instances         => $num_instances,
     pb_initial_port       => $pb_initial_port,
     http_initial_port     => $http_initial_port,
     handoff_initial_port  => $handoff_initial_port,
     install_dir           => $install_dir
-  } ->
+  }
+
   class { 'riakdev::finish':
     install_dir  => $install_dir
-  } ->
-  Class['riakdev']
+  }
+
+  anchor { 'riakdev::begin': }
+  anchor { 'riakdev::end': }
+
+  Anchor['riakdev::begin'] ->
+  Class['riakdev::prep'] ->
+  Class['riakdev::instances'] ->
+  Class['riakdev::finish'] ->
+  Anchor['riakdev::end']
+
 }
