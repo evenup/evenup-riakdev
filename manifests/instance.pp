@@ -147,7 +147,6 @@ define riakdev::instance(
     }
   }
 
-
   $scheme = inline_template("<%= scope.lookupvar('::fqdn').split('.').reverse.join('.')%>.riak.dev<%= scope.lookupvar('instance')%>")
   # Metrics
   sensu::check { "riak-dev${instance}-metrics":
