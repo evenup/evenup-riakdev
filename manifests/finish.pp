@@ -35,12 +35,12 @@ class riakdev::finish(
     require     => Exec['join_plan'],
   }
 
-  backups::riak {
-    'dev_riak':
-      mode    => 'dev',
-      hour    => 7,
-      minute  => 10;
-  }
+#  backups::riak {
+#    'dev_riak':
+#      mode    => 'dev',
+#      hour    => 7,
+#      minute  => 10;
+#  }
 
 }
 
