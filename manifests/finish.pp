@@ -13,7 +13,7 @@
 # Copyright 2013 EvenUp.
 #
 class riakdev::finish(
-  $install_dir
+  $install_dir  = '/var/lib/riak',
 ) {
 
   # Erlang needs $HOME to be set
