@@ -120,7 +120,7 @@ define riakdev::instance(
     owner   => root,
     group   => root,
     mode    => '0555',
-    content  => template('riakdev/riak_init.erb'),
+    content => template('riakdev/riak_init.erb'),
   }
 
   service { "riak_dev${instance}":
@@ -147,7 +147,7 @@ define riakdev::instance(
     }
   }
 
-  $scheme = inline_template("<%= scope.lookupvar('::fqdn').split('.').reverse.join('.')%>.riak.dev<%= scope.lookupvar('instance')%>")
+  $scheme = inline_template('<%= scope.lookupvar(\'::fqdn\').split(\'.\').reverse.join(\'.\')%>.riak.dev<%= scope.lookupvar(\'instance\')%>')
   # Metrics
   sensu::check { "riak-dev${instance}-metrics":
     type        => 'metric',

@@ -14,9 +14,9 @@
 # Copyright 2013 EvenUp.
 #
 class riakdev::prep(
-  $version,
-  $install_dir,
-  $static_url,
+  $version      = '1.2.1',
+  $install_dir  = '/var/lib/riak',
+  $static_url   = 'http://files/',
 ) {
 
   group { 'riak':
