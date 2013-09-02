@@ -11,3 +11,4 @@ gem 'travis-lint'
 gem 'puppet-syntax'
 gem 'puppet', ENV['PUPPET_VERSION'] || '~> 3.2.0'
 gem 'vagrant-wrapper'
+
