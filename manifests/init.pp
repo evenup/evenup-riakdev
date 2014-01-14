@@ -56,6 +56,7 @@ class riakdev(
   $handoff_initial_port = 8101,
   $install_dir          = '/var/lib/riak',
   $static_url           = 'http://files/',
+  $monitoring           = '',
 ) {
 
   class { 'riakdev::prep':
@@ -69,7 +70,8 @@ class riakdev(
     pb_initial_port       => $pb_initial_port,
     http_initial_port     => $http_initial_port,
     handoff_initial_port  => $handoff_initial_port,
-    install_dir           => $install_dir
+    install_dir           => $install_dir,
+    monitoring            => $monitoring,
   }
 
   class { 'riakdev::finish':

@@ -48,6 +48,7 @@ define riakdev::instance(
   $handoff_port,
   $install_dir,
   $join_node = false,
+  $monitoring = '',
 ) {
 
   $version = $riakdev::version
@@ -147,14 +148,18 @@ define riakdev::instance(
     }
   }
 
-  $scheme = inline_template('<%= scope.lookupvar(\'::fqdn\').split(\'.\').reverse.join(\'.\')%>.riak.dev<%= scope.lookupvar(\'instance\')%>')
-  # Metrics
-  sensu::check { "riak-dev${instance}-metrics":
-    type        => 'metric',
-    handlers    => 'graphite',
-    command     => "/etc/sensu/plugins/riak-metrics.rb -s ${scheme} -h localhost -p ${http_port}",
-    standalone  => true,
-    interval    => 30,
+  case $monitoring {
+    'sensu':  {
+      $scheme = inline_template('<%= scope.lookupvar(\'::fqdn\').split(\'.\').reverse.join(\'.\')%>.riak.dev<%= scope.lookupvar(\'instance\')%>')
+      # Metrics
+      sensu::check { "riak-dev${instance}-metrics":
+        type        => 'metric',
+        handlers    => 'graphite',
+        command     => "/etc/sensu/plugins/riak-metrics.rb -s ${scheme} -h localhost -p ${http_port}",
+        standalone  => true,
+        interval    => 30,
+      }
+    }
   }
 
 }
