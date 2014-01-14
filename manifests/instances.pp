@@ -20,9 +20,10 @@ class riakdev::instances (
   $http_initial_port,
   $handoff_initial_port,
   $install_dir,
+  $monitoring,
 ) {
 
-  $instances = gen_instances($num_instances, $pb_initial_port, $http_initial_port, $handoff_initial_port, $install_dir)
+  $instances = gen_instances($num_instances, $pb_initial_port, $http_initial_port, $handoff_initial_port, $install_dir, $monitoring)
   create_resources('riakdev::instance', $instances)
 
 }
