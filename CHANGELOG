@@ -1,3 +1,4 @@
+  Fix data_root overlap
 20130902 v1.2.0
   Remove backups
   Templates for riak 1.3
