@@ -43,11 +43,6 @@
 #
 # * Justin Lambert <mailto:jlambert@letsevenup.com>
 #
-#
-# === Copyright
-#
-# Copyright 2013 EvenUp.
-#
 class riakdev(
   $version              = '1.2.1',
   $num_instances        = 4,
@@ -56,35 +51,12 @@ class riakdev(
   $handoff_initial_port = 8101,
   $install_dir          = '/var/lib/riak',
   $static_url           = 'http://files/',
-  $monitoring           = '',
 ) {
 
-  class { 'riakdev::prep':
-    version     => $version,
-    install_dir => $install_dir,
-    static_url  => $static_url,
-  }
-
-  class { 'riakdev::instances':
-    num_instances         => $num_instances,
-    pb_initial_port       => $pb_initial_port,
-    http_initial_port     => $http_initial_port,
-    handoff_initial_port  => $handoff_initial_port,
-    install_dir           => $install_dir,
-    monitoring            => $monitoring,
-  }
-
-  class { 'riakdev::finish':
-    install_dir  => $install_dir
-  }
-
-  anchor { 'riakdev::begin': }
-  anchor { 'riakdev::end': }
-
-  Anchor['riakdev::begin'] ->
-  Class['riakdev::prep'] ->
-  Class['riakdev::instances'] ->
-  Class['riakdev::finish'] ->
-  Anchor['riakdev::end']
+  anchor { '::riakdev::begin': } ->
+  class { '::riakdev::prep': } ->
+  class { '::riakdev::instances': } ->
+  class { '::riakdev::finish': } ->
+  anchor { '::riakdev::end': }
 
 }

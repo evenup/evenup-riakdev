@@ -1,0 +1,19 @@
+{
+  "name": "evenup-riakdev",
+  "version": "1.3.0",
+  "author": "Justin Lambert <jlambert@letsevenup.com>",
+  "license": "Apache-2.0",
+  "summary": "Installs a Riak N node development cluster",
+  "source": "https://github.com/evenup/evenup-riakdev",
+  "project_page": "https://github.com/evenup/evenup-riakdev",
+  "issues_url": "https://github.com/evenup/evenup-riakdev/issues",
+  "tags": [ "riak" ],
+  "operatingsystem_support": [
+    { "operatingsystem": "RedHat", "operatingsystemrelease": [ "6", "7" ] },
+    { "operatingsystem": "CentOS", "operatingsystemrelease": [ "6", "7" ] },
+    { "operatingsystem": "Ubuntu", "operatingsystemrelease": [ "10.04", "12.04", "14.04" ] }
+  ],
+  "dependencies": [
+    { "name": "puppetlabs/stdlib", "version_requirement": ">=3.2.0 <5.0.0" }
+  ]
+}

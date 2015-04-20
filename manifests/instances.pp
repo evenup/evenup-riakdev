@@ -9,21 +9,15 @@
 #
 # * Justin Lambert <mailto:jlambert@letsevenup.com>
 #
-#
-# === Copyright
-#
-# Copyright 2013 EvenUp.
-#
 class riakdev::instances (
-  $num_instances,
-  $pb_initial_port,
-  $http_initial_port,
-  $handoff_initial_port,
-  $install_dir,
-  $monitoring,
+  $num_instances        = $::riakdev::num_instances,
+  $pb_initial_port      = $::riakdev::pb_initial_port,
+  $http_initial_port    = $::riakdev::http_initial_port,
+  $handoff_initial_port = $::riakdev::handoff_initial_port,
+  $install_dir          = $::riakdev::install_dir,
 ) {
 
-  $instances = gen_instances($num_instances, $pb_initial_port, $http_initial_port, $handoff_initial_port, $install_dir, $monitoring)
+  $instances = gen_instances($num_instances, $pb_initial_port, $http_initial_port, $handoff_initial_port, $install_dir)
   create_resources('riakdev::instance', $instances)
 
 }

@@ -3,7 +3,6 @@ fixtures:
     backups: https://github.com/evenup/evenup-backups.git
     concat: https://github.com/puppetlabs/puppetlabs-concat.git
     ruby: https://github.com/evenup/evenup-ruby.git
-#    sensu: https://github.com/sensu/sensu-puppet.git
     stdlib: https://github.com/puppetlabs/puppetlabs-stdlib.git
   symlinks:
     riakdev: "#{source_dir}"
