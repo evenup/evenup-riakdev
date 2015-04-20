@@ -7,13 +7,8 @@
 #
 # * Justin Lambert <mailto:jlambert@letsevenup.com>
 #
-#
-# === Copyright
-#
-# Copyright 2013 EvenUp.
-#
 class riakdev::finish(
-  $install_dir  = '/var/lib/riak',
+  $install_dir = $::riakdev::install_dir,
 ) {
 
   # Erlang needs $HOME to be set

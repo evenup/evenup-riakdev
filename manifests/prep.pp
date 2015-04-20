@@ -8,26 +8,21 @@
 #
 # * Justin Lambert <mailto:jlambert@letsevenup.com>
 #
-#
-# === Copyright
-#
-# Copyright 2013 EvenUp.
-#
 class riakdev::prep(
-  $version      = '1.2.1',
-  $install_dir  = '/var/lib/riak',
-  $static_url   = 'http://files/',
+  $version      = $::riakdev::version,
+  $install_dir  = $::riakdev::install_dir,
+  $static_url   = $::riakdev::static_url,
 ) {
 
   group { 'riak':
-    ensure  => 'present',
-    system  => true,
+    ensure => 'present',
+    system => true,
   }
 
   file { $install_dir:
-    ensure  => directory,
-    owner   => root,
-    group   => root,
+    ensure => directory,
+    owner  => root,
+    group  => root,
   }
 
   # TODO - move static path to hiera

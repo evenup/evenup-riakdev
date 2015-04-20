@@ -36,11 +36,6 @@
 #
 # * Justin Lambert <mailto:jlambert@letsevenup.com>
 #
-#
-# === Copyright
-#
-# Copyright 2013 EvenUp.
-#
 define riakdev::instance(
   $instance,
   $http_port,
@@ -48,30 +43,29 @@ define riakdev::instance(
   $handoff_port,
   $install_dir,
   $join_node = false,
-  $monitoring = '',
 ) {
 
   $version = $riakdev::version
 
   File {
     require => User["riak${instance}"],
-    before  => Service["riak_dev${instance}"]
+    before  => Service["riak_dev${instance}"],
   }
 
   Exec {
-    require => User["riak${instance}"]
+    require => User["riak${instance}"],
   }
 
   user { "riak${instance}":
-    ensure  => 'present',
-    system  => true,
-    gid     => 'riak',
-    home    => "${install_dir}/dev${instance}",
-    shell   => '/bin/bash',
+    ensure => 'present',
+    system => true,
+    gid    => 'riak',
+    home   => "${install_dir}/dev${instance}",
+    shell  => '/bin/bash',
   }
 
   case $instance {
-    /^(1|'1')$/:  {
+    /^(1|'1')$/, 1:  {
       $join_notify = File["${install_dir}/dev${instance}/bin/riak"]
     }
     default:    {
@@ -129,7 +123,7 @@ define riakdev::instance(
     enable  => true,
     require => [ File["${install_dir}/dev${instance}/bin/riak"], File["${install_dir}/dev${instance}/bin/riak-admin"],
                   File["${install_dir}/dev${instance}/etc/app.config"], File["${install_dir}/dev${instance}/etc/vm.args"],
-                  File["/etc/init.d/riak_dev${instance}"] ]
+                  File["/etc/init.d/riak_dev${instance}"] ],
   }
 
   # This is here to prevent dependency cycle on dev1.  Find a better way to do this
@@ -148,20 +142,4 @@ define riakdev::instance(
     }
   }
 
-  case $monitoring {
-    'sensu':  {
-      $scheme = inline_template('<%= scope.lookupvar(\'::fqdn\').split(\'.\').reverse.join(\'.\')%>.riak.dev<%= scope.lookupvar(\'instance\')%>')
-      # Metrics
-      sensu::check { "riak-dev${instance}-metrics":
-        type        => 'metric',
-        handlers    => 'graphite',
-        command     => "/etc/sensu/plugins/riak-metrics.rb -s ${scheme} -h localhost -p ${http_port}",
-        standalone  => true,
-        interval    => 30,
-      }
-    }
-  }
-
 }
-
-# TODO - purge logs?
