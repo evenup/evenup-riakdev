@@ -17,15 +17,14 @@ describe 'riakdev::instance', :type => :define do
     it { should contain_exec('decompress_dev10').with_notify('Exec[join_node10]') }
     it { should contain_file('/var/lib/riak/dev10/bin/riak').with_owner('riak10') }
     it { should contain_file('/var/lib/riak/dev10/bin/riak-admin').with_owner('riak10') }
-    it { should contain_file('/var/lib/riak/dev10/etc/app.config') }
-    it { should contain_file('/var/lib/riak/dev10/etc/app.config').with_content(/\{http, \[ \{"0.0.0.0", 1234 \} \]\}/) }
-    it { should contain_file('/var/lib/riak/dev10/etc/app.config').with_content(/\{pb_port, 2345 \}/) }
-    it { should contain_file('/var/lib/riak/dev10/etc/app.config').with_content(/\{handoff_port, 3456 \}/) }
-    it { should contain_file('/var/lib/riak/dev10/etc/vm.args') }
-    it { should contain_file('/var/lib/riak/dev10/etc/vm.args').with_content(/\-name dev10@somehost/) }
-    it { should contain_file('/etc/init.d/riak_dev10') }
-    it { should contain_file('/etc/init.d/riak_dev10').with_content(/HOME=\/var\/lib\/riak\/dev10/) }
-    it { should contain_service('riak_dev10').with_enable(true) }
+    it { should contain_file('/var/lib/riak/dev10/etc/riak.conf') }
+    it { should contain_file('/var/lib/riak/dev10/etc/riak.conf').with_content(/listener\.http\.internal\s+=\s+0.0.0.0:1234/) }
+    it { should contain_file('/var/lib/riak/dev10/etc/riak.conf').with_content(/listener\.protobuf\.internal\s+=\s+0.0.0.0:2345/) }
+    it { should contain_file('/var/lib/riak/dev10/etc/riak.conf').with_content(/handoff.port\s+=\s+3456/) }
+    it { should contain_file('/var/lib/riak/dev10/etc/riak.conf').with_content(/nodename\s+=\s+dev10@127.0.0.1/) }
+    it { should contain_file('/usr/lib/systemd/system/riak10.service') }
+    it { should contain_file('/usr/lib/systemd/system/riak10.service').with_content(/ExecStart=\/var\/lib\/riak\/dev10\/bin\/riak start/) }
+    it { should contain_service('riak10').with_enable(true) }
     it { should contain_exec('join_node10') }
 
   end

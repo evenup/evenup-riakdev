@@ -38,20 +38,19 @@
 #       version => '1.3.1',
 #     }
 #
-#
 # === Authors
 #
 # * Justin Lambert <mailto:jlambert@letsevenup.com>
 #
 class riakdev(
-  $version              = '1.2.1',
-  $num_instances        = 4,
-  $pb_initial_port      = 8081,
-  $http_initial_port    = 8091,
-  $handoff_initial_port = 8101,
-  $install_dir          = '/var/lib/riak',
-  $static_url           = 'http://files/',
-) {
+  $version              = $::riakdev::params::version,
+  $num_instances        = $::riakdev::params::num_instances,
+  $pb_initial_port      = $::riakdev::params::pb_initial_port,
+  $http_initial_port    = $::riakdev::params::http_initial_port,
+  $handoff_initial_port = $::riakdev::params::handoff_initial_port,
+  $install_dir          = $::riakdev::params::install_dir,
+  $static_url           = $::riakdev::params::static_url,
+) inherits riakdev::params {
 
   anchor { '::riakdev::begin': } ->
   class { '::riakdev::prep': } ->
