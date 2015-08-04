@@ -1,0 +1,15 @@
+[Unit]
+Description=Riak dev<%= @instance %> instance
+After=network.target
+
+[Service]
+Type=forking
+User=riak<%= @instance %>
+Group=riak
+ExecStart=<%= @install_dir %>/dev<%= @instance %>/bin/riak start
+ExecReload=<%= @install_dir %>/dev<%= @instance %>/bin/riak restart
+ExecStop=<%= @install_dir %>/dev<%= @instance %>/bin/riak stop
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

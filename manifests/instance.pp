@@ -49,11 +49,6 @@ define riakdev::instance(
 
   File {
     require => User["riak${instance}"],
-    before  => Service["riak_dev${instance}"],
-  }
-
-  Exec {
-    require => User["riak${instance}"],
   }
 
   user { "riak${instance}":
@@ -74,13 +69,26 @@ define riakdev::instance(
   }
 
   exec { "decompress_dev${instance}":
-    command   => "/bin/tar -xzf ${install_dir}/riak-dev-instance-${version}.tar.gz -C ${install_dir} ; mv ${install_dir}/dev ${install_dir}/dev${instance} ; chown -R riak${instance}:riak ${install_dir}/dev${instance} ; rm -f ${install_dir}/dev${instance}/etc/{app.config,vm.args}",
+    command   => "/bin/tar -xzf ${install_dir}/riak-dev-instance-${version}.tar.gz -C ${install_dir} ; mv ${install_dir}/dev ${install_dir}/dev${instance} ; chown -R riak${instance}:riak ${install_dir}/dev${instance} ; rm -f ${install_dir}/dev${instance}/etc/riak.conf",
     cwd       => $install_dir,
     path      => '/usr/bin:/bin',
     unless    => "test -d ${install_dir}/dev${instance}",
     logoutput => on_failure,
     notify    => $join_notify,
     require   => [ User["riak${instance}"], Class['Riakdev::Prep'] ],
+  }
+
+  exec { "mkdir_tmpdir_${instance}":
+    command => "mkdir -p /tmp/var/lib/riak/dev${instance}",
+    cwd     => $install_dir,
+    unless  => "test -d /tmp/var/lib/riak/dev${instance}",
+    path    => '/bin:/usr/bin',
+  }
+
+  file { "/tmp/var/lib/riak/dev${instance}":
+    owner   => "riak${instance}",
+    group   => 'riak',
+    require => [ Exec["mkdir_tmpdir_${instance}"], User["riak${instance}"] ],
   }
 
   file { [ "${install_dir}/dev${instance}/bin/riak", "${install_dir}/dev${instance}/bin/riak-admin" ]:
@@ -90,54 +98,45 @@ define riakdev::instance(
     require => Exec["decompress_dev${instance}"],
   }
 
-  file { "${install_dir}/dev${instance}/etc/app.config":
+  file { "${install_dir}/dev${instance}/etc/riak.conf":
     ensure  => file,
     owner   => "riak${instance}",
     group   => riak,
     mode    => '0444',
-    content => template('riakdev/dev_app.config'),
+    content => template('riakdev/riak.conf.erb'),
     require => Exec["decompress_dev${instance}"],
     replace => false,
   }
 
-  file { "${install_dir}/dev${instance}/etc/vm.args":
-    ensure  => file,
-    owner   => "riak${instance}",
-    group   => riak,
-    mode    => '0444',
-    content => template('riakdev/dev_vm.args'),
-    require => Exec["decompress_dev${instance}"],
-    replace => false,
+  firewall { "550 allow riak(${instance}) inbound":
+    action => 'accept',
+    state  => 'NEW',
+    dport  => [$http_port, $pb_port, $handoff_port],
   }
 
-  file { "/etc/init.d/riak_dev${instance}":
-    ensure  => file,
-    owner   => root,
-    group   => root,
-    mode    => '0555',
-    content => template('riakdev/riak_init.erb'),
+  file { "/usr/lib/systemd/system/riak${instance}.service":
+    ensure  => 'file',
+    content => template('riakdev/riak.service.erb'),
   }
 
-  service { "riak_dev${instance}":
+  service { "riak${instance}":
     ensure  => running,
     enable  => true,
-    require => [ File["${install_dir}/dev${instance}/bin/riak"], File["${install_dir}/dev${instance}/bin/riak-admin"],
-                  File["${install_dir}/dev${instance}/etc/app.config"], File["${install_dir}/dev${instance}/etc/vm.args"],
-                  File["/etc/init.d/riak_dev${instance}"] ],
+    require => [ File["/tmp/var/lib/riak/dev${instance}"], File["${install_dir}/dev${instance}/bin/riak"], File["${install_dir}/dev${instance}/etc/riak.conf"], File["/usr/lib/systemd/system/riak${instance}.service"] ],
   }
 
   # This is here to prevent dependency cycle on dev1.  Find a better way to do this
   case $instance {
-    /^(1|'1')$/:  { }
+    /^(1|'1')$/, 1:  { }
     default:    {
       exec { "join_node${instance}":
-        command     => "/bin/sh -c \"${install_dir}/dev${instance}/bin/riak-admin cluster join dev1@${::fqdn}\"",
+        command     => "/bin/sh -c \"${install_dir}/dev${instance}/bin/riak-admin cluster join dev1@127.0.0.1\"",
         cwd         => "${install_dir}/dev${instance}",
         path        => "/bin:/usr/bin:${install_dir}/dev${instance}/bin",
         refreshonly => true,
         environment => "HOME=${install_dir}/dev${instance}",
         notify      => Class['Riakdev::Finish'],
-        require     => Riakdev::Instance['dev1'],
+        require     => [ Riakdev::Instance['dev1'], Service["riak${instance}"] ],
       }
     }
   }
